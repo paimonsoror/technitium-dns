@@ -24,6 +24,31 @@ spec:
   selector:
     {{- include "technitium-dns-server.selectorLabels" . | nindent 4 }}
 ---
+# Service for DNS Web Console
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "technitium-dns-server.fullname" . }}-web-tls
+  labels:
+    {{- include "technitium-dns-server.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+  {{- with .Values.service.webTls.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.webTls.type }}
+  {{- if .Values.service.webTls.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.service.webTls.externalTrafficPolicy }}
+  {{- end }}
+  ports:
+  - port: {{ .Values.service.webTls.port }}
+    targetPort: web-https
+    protocol: TCP
+    name: https
+  selector:
+    {{- include "technitium-dns-server.selectorLabels" . | nindent 4 }}
+---
 # Service for DNS (UDP port 53)
 apiVersion: v1
 kind: Service
