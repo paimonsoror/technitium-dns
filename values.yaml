@@ -79,7 +79,7 @@ service:
   web:
     type: ClusterIP
     externalTrafficPolicy: Local
-    port: 5380
+    port: 53443
     annotations: {}
 
   # Service type for DNS (UDP/TCP port 53)
