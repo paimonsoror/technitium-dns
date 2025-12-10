@@ -78,6 +78,7 @@ service:
   # Service type for the DNS web console
   web:
     type: ClusterIP
+    externalTrafficPolicy: Local
     port: 5380
     annotations: {}
 

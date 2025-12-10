@@ -13,6 +13,9 @@ metadata:
   {{- end }}
 spec:
   type: {{ .Values.service.web.type }}
+  {{- if .Values.service.web.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.service.web.externalTrafficPolicy }}
+  {{- end }}
   ports:
   - port: {{ .Values.service.web.port }}
     targetPort: web-http
