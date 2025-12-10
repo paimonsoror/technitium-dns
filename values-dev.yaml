@@ -1,0 +1,76 @@
+# Development values for technitium-dns-server
+# This is a minimal configuration for local development and testing
+
+replicaCount: 1
+
+image:
+  repository: technitium/dns-server
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+# DNS Server Configuration
+dnsServer:
+  domain: "dns.local"
+  # Set a simple password for dev
+  adminPassword: "admin"
+  preferIPv6: false
+  webServiceHttpPort: 5380
+  webServiceHttpsPort: 53443
+  webServiceEnableHttps: false
+  webServiceUseSelfSignedCert: false
+  forwarders: "8.8.8.8, 1.1.1.1"
+  forwarderProtocol: "Udp"
+  enableBlocking: false
+  blockListUrls: ""
+
+service:
+  web:
+    type: NodePort
+    port: 5380
+    annotations: {}
+
+  dns:
+    type: NodePort
+    annotations: {}
+
+  dnsTls:
+    enabled: false
+    type: ClusterIP
+    port: 853
+
+  dnsHttps:
+    enabled: false
+    type: ClusterIP
+    port: 443
+
+ingress:
+  enabled: false
+
+persistence:
+  enabled: false
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+serviceAccount:
+  create: true
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+config:
+  customConfigMap: {}

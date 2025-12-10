@@ -1,0 +1,10 @@
+{{- if .Values.config.customConfigMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "technitium-dns-server.fullname" . }}-config
+  labels:
+    {{- include "technitium-dns-server.labels" . | nindent 4 }}
+data:
+  {{- toYaml .Values.config.customConfigMap | nindent 2 }}
+{{- end }}

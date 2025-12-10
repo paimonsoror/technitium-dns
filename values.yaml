@@ -1,0 +1,157 @@
+# Default values for technitium-dns-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: technitium/dns-server
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# DNS Server Configuration
+# Environment variables are only read when the DNS config file does not exist
+# (i.e., when the DNS server starts for the first time)
+dnsServer:
+  # The primary domain name used by this DNS Server to identify itself
+  domain: ""
+
+  # Admin password for the DNS web console
+  # Leave empty to use a random generated password (recommended)
+  adminPassword: ""
+
+  # Use IPv6 for querying whenever possible
+  preferIPv6: false
+
+  # Web console HTTP port
+  webServiceHttpPort: 5380
+
+  # Web console HTTPS port
+  webServiceHttpsPort: 53443
+
+  # Enable HTTPS for the DNS web console
+  webServiceEnableHttps: false
+
+  # Use self-signed TLS certificate
+  webServiceUseSelfSignedCert: false
+
+  # Comma separated list of forwarder addresses (e.g., "8.8.8.8, 1.1.1.1")
+  forwarders: ""
+
+  # Forwarder protocol: Udp, Tcp, Tls, Https, HttpsJson
+  forwarderProtocol: "Tcp"
+
+  # Enable blocking domain names using Blocked Zone and Block List Zone
+  enableBlocking: false
+
+  # Comma separated list of block list URLs
+  blockListUrls: ""
+
+service:
+  # Service type for the DNS web console
+  web:
+    type: ClusterIP
+    port: 5380
+    annotations: {}
+
+  # Service type for DNS (UDP/TCP port 53)
+  dns:
+    type: LoadBalancer
+    annotations: {}
+    # For cloud providers, you can request a specific IP
+    loadBalancerIP: ""
+    # Restrict load balancer to specific source ranges
+    loadBalancerSourceRanges: []
+
+  # Service type for DNS-over-TLS (port 853)
+  dnsTls:
+    enabled: false
+    type: ClusterIP
+    port: 853
+    annotations: {}
+
+  # Service type for DNS-over-HTTPS (port 443)
+  dnsHttps:
+    enabled: false
+    type: ClusterIP
+    port: 443
+    annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: dns.example.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: dns-tls
+  #    hosts:
+  #      - dns.example.local
+
+persistence:
+  enabled: true
+  # storageClass: "-"
+  accessMode: ReadWriteOnce
+  size: 1Gi
+  # existingClaim: ""
+  annotations: {}
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 250m
+  #   memory: 256Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# ConfigMap for custom configuration files
+# Use this to provide custom configuration files for the DNS server
+config:
+  # Custom ConfigMap data
+  # Example:
+  # customConfigMap:
+  #   custom.conf: |
+  #     # Your custom configuration here
+  customConfigMap: {}

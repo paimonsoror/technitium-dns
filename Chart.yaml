@@ -1,0 +1,19 @@
+apiVersion: v2
+name: technitium-dns-server
+description: A Helm chart for Technitium DNS Server - A robust, feature-rich authoritative and recursive DNS server
+type: application
+version: 0.1.0
+appVersion: "latest"
+keywords:
+  - dns
+  - dns-server
+  - technitium
+  - authoritative-dns
+  - recursive-dns
+home: https://technitium.com/dns/
+sources:
+  - https://github.com/TechnitiumSoftware/DnsServer
+  - https://hub.docker.com/r/technitium/dns-server
+maintainers:
+  - name: Technitium DNS Server
+    url: https://technitium.com

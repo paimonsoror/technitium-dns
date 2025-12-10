@@ -1,0 +1,147 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "technitium-dns-server.fullname" . }}
+  labels:
+    {{- include "technitium-dns-server.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "technitium-dns-server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "technitium-dns-server.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- include "technitium-dns-server.imagePullSecrets" . | nindent 6 }}
+      serviceAccountName: {{ include "technitium-dns-server.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        {{- if .Values.dnsServer.domain }}
+        - name: DNS_SERVER_DOMAIN
+          value: {{ .Values.dnsServer.domain | quote }}
+        {{- end }}
+        {{- if .Values.dnsServer.adminPassword }}
+        - name: DNS_SERVER_ADMIN_PASSWORD
+          value: {{ .Values.dnsServer.adminPassword | quote }}
+        {{- end }}
+        {{- if .Values.dnsServer.preferIPv6 }}
+        - name: DNS_SERVER_PREFER_IPV6
+          value: "true"
+        {{- end }}
+        {{- if .Values.dnsServer.webServiceHttpPort }}
+        - name: DNS_SERVER_WEB_SERVICE_HTTP_PORT
+          value: {{ .Values.dnsServer.webServiceHttpPort | quote }}
+        {{- end }}
+        {{- if .Values.dnsServer.webServiceHttpsPort }}
+        - name: DNS_SERVER_WEB_SERVICE_HTTPS_PORT
+          value: {{ .Values.dnsServer.webServiceHttpsPort | quote }}
+        {{- end }}
+        {{- if .Values.dnsServer.webServiceEnableHttps }}
+        - name: DNS_SERVER_WEB_SERVICE_ENABLE_HTTPS
+          value: "true"
+        {{- end }}
+        {{- if .Values.dnsServer.webServiceUseSelfSignedCert }}
+        - name: DNS_SERVER_WEB_SERVICE_USE_SELF_SIGNED_CERT
+          value: "true"
+        {{- end }}
+        {{- if .Values.dnsServer.forwarders }}
+        - name: DNS_SERVER_FORWARDERS
+          value: {{ .Values.dnsServer.forwarders | quote }}
+        {{- end }}
+        {{- if .Values.dnsServer.forwarderProtocol }}
+        - name: DNS_SERVER_FORWARDER_PROTOCOL
+          value: {{ .Values.dnsServer.forwarderProtocol | quote }}
+        {{- end }}
+        {{- if .Values.dnsServer.enableBlocking }}
+        - name: DNS_SERVER_ENABLE_BLOCKING
+          value: "true"
+        {{- end }}
+        {{- if .Values.dnsServer.blockListUrls }}
+        - name: DNS_SERVER_BLOCK_LIST_URLS
+          value: {{ .Values.dnsServer.blockListUrls | quote }}
+        {{- end }}
+        ports:
+        - name: dns-udp
+          containerPort: 53
+          protocol: UDP
+        - name: dns-tcp
+          containerPort: 53
+          protocol: TCP
+        - name: web-http
+          containerPort: {{ .Values.dnsServer.webServiceHttpPort }}
+          protocol: TCP
+        {{- if .Values.dnsServer.webServiceEnableHttps }}
+        - name: web-https
+          containerPort: {{ .Values.dnsServer.webServiceHttpsPort }}
+          protocol: TCP
+        {{- end }}
+        {{- if .Values.service.dnsTls.enabled }}
+        - name: dns-tls-udp
+          containerPort: 853
+          protocol: UDP
+        - name: dns-tls-tcp
+          containerPort: 853
+          protocol: TCP
+        {{- end }}
+        {{- if .Values.service.dnsHttps.enabled }}
+        - name: dns-https-udp
+          containerPort: 443
+          protocol: UDP
+        - name: dns-https-tcp
+          containerPort: 443
+          protocol: TCP
+        {{- end }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: web-http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: web-http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        volumeMounts:
+        - name: config
+          mountPath: /etc/dns
+      volumes:
+      - name: config
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim | default (include "technitium-dns-server.fullname" .) }}
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
