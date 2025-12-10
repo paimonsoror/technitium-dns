@@ -35,6 +35,9 @@ metadata:
   {{- end }}
 spec:
   type: {{ .Values.service.dns.type }}
+  {{- if .Values.service.dns.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.service.dns.externalTrafficPolicy }}
+  {{- end }}
   {{- if .Values.service.dns.loadBalancerIP }}
   loadBalancerIP: {{ .Values.service.dns.loadBalancerIP }}
   {{- end }}
@@ -64,6 +67,9 @@ metadata:
   {{- end }}
 spec:
   type: {{ .Values.service.dns.type }}
+  {{- if .Values.service.dns.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.service.dns.externalTrafficPolicy }}
+  {{- end }}
   {{- if .Values.service.dns.loadBalancerIP }}
   loadBalancerIP: {{ .Values.service.dns.loadBalancerIP }}
   {{- end }}
