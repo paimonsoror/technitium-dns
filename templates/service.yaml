@@ -31,7 +31,7 @@ metadata:
   name: {{ include "technitium-dns-server.fullname" . }}-web-tls
   labels:
     {{- include "technitium-dns-server.labels" . | nindent 4 }}
-    app.kubernetes.io/component: web
+    app.kubernetes.io/component: web-tls
   {{- with .Values.service.webTls.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
