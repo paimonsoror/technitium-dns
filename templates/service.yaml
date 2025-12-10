@@ -1,3 +1,4 @@
+{{- if .Values.dnsServer.webServiceEnableHttp }}
 ---
 # Service for DNS Web Console
 apiVersion: v1
@@ -23,6 +24,8 @@ spec:
     name: http
   selector:
     {{- include "technitium-dns-server.selectorLabels" . | nindent 4 }}
+{{- end }}
+{{- if .Values.dnsServer.webServiceEnableHttps }}
 ---
 # Service for DNS Web Console
 apiVersion: v1
@@ -48,6 +51,7 @@ spec:
     name: https
   selector:
     {{- include "technitium-dns-server.selectorLabels" . | nindent 4 }}
+{{- end }}
 ---
 # Service for DNS (TCP port 53)
 apiVersion: v1

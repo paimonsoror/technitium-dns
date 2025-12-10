@@ -56,6 +56,9 @@ dnsServer:
   # Web console HTTPS port
   webServiceHttpsPort: 53443
 
+  # Enable HTTP for the DNS web console
+  webServiceEnableHttp: true
+
   # Enable HTTPS for the DNS web console
   webServiceEnableHttps: true
 
