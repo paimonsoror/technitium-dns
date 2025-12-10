@@ -57,10 +57,10 @@ dnsServer:
   webServiceHttpsPort: 53443
 
   # Enable HTTPS for the DNS web console
-  webServiceEnableHttps: false
+  webServiceEnableHttps: true
 
   # Use self-signed TLS certificate
-  webServiceUseSelfSignedCert: false
+  webServiceUseSelfSignedCert: true
 
   # Comma separated list of forwarder addresses (e.g., "8.8.8.8, 1.1.1.1")
   forwarders: ""
