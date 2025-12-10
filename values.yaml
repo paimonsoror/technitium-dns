@@ -77,13 +77,13 @@ dnsServer:
 service:
   # Service type for the DNS web console
   web:
-    type: ClusterIP
+    type: LoadBalancer
     externalTrafficPolicy: Local
     port: 5380
     annotations: {}
 
   webTls:
-    type: ClusterIP
+    type: LoadBalancer
     externalTrafficPolicy: Local
     port: 53443
     annotations: {}
