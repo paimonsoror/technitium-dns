@@ -84,6 +84,7 @@ service:
   # Service type for DNS (UDP/TCP port 53)
   dns:
     type: LoadBalancer
+    externalTrafficPolicy: cluster
     annotations: {}
     # For cloud providers, you can request a specific IP
     loadBalancerIP: ""
