@@ -154,6 +154,11 @@ spec:
           mountPath: /etc/ssl/certs
           readOnly: true
         {{- end }}
+        {{- if .Values.pfxCertificate.enabled }}
+        - name: pfx-cert
+          mountPath: {{ .Values.pfxCertificate.mountPath }}
+          readOnly: true
+        {{- end }}
       volumes:
       - name: config
       {{- if .Values.persistence.enabled }}
@@ -182,6 +187,22 @@ spec:
         {{- end }}
       - name: shared-certs
         emptyDir: {}
+      {{- end }}
+      {{- if .Values.pfxCertificate.enabled }}
+      - name: pfx-cert
+        secret:
+          {{- if or .Values.pfxCertificate.pfxData .Values.pfxCertificate.password }}
+          secretName: {{ include "technitium-dns-server.fullname" . }}-pfx-cert
+          {{- else }}
+          secretName: {{ .Values.pfxCertificate.secret.name }}
+          {{- end }}
+          items:
+            - key: {{ .Values.pfxCertificate.secret.pfxKey }}
+              path: {{ .Values.pfxCertificate.filename }}
+            {{- if .Values.pfxCertificate.secret.passwordKey }}
+            - key: {{ .Values.pfxCertificate.secret.passwordKey }}
+              path: password.txt
+            {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

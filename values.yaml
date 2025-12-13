@@ -172,6 +172,25 @@ customCA:
   # Use a certificate directly pasted (least secure)
   #certificate: ""
 
+# PFX/P12 Certificate Configuration for Technitium HTTPS
+pfxCertificate:
+  enabled: false
+  # Mount path where Technitium can access the certificate
+  mountPath: /etc/dns/certs
+  # Can be provided via existing secret
+  secret:
+    name: ""
+    # Key in the secret containing the PFX file
+    pfxKey: "certificate.pfx"
+    # Key in the secret containing the password (optional)
+    passwordKey: "password"
+  # Or provide PFX content directly (base64 encoded, will create a secret)
+  pfxData: ""
+  # Password for the PFX file
+  password: ""
+  # Filename for the certificate in the container
+  filename: "certificate.pfx"
+
 # ConfigMap for custom configuration files
 # Use this to provide custom configuration files for the DNS server
 config:
