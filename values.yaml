@@ -157,6 +157,21 @@ tolerations: []
 
 affinity: {}
 
+customCA:
+  enabled: false
+  # Use an existing secret (most secure)
+  #secret:
+  #  name: technitium-ca-cert
+  #  key: ca.crt
+
+  # Use an existing configmap (next best option)
+  #configmap:
+  #  name: technitium-ca-cert
+  #  key: ca.crt
+
+  # Use a certificate directly pasted (least secure)
+  #certificate: ""
+
 # ConfigMap for custom configuration files
 # Use this to provide custom configuration files for the DNS server
 config:

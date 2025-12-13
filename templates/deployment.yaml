@@ -22,6 +22,30 @@ spec:
       serviceAccountName: {{ include "technitium-dns-server.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.customCA.enabled }}
+      initContainers:
+      - name: install-ca-cert
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+          - sh
+          - -c
+          - |
+            if [ -f /ca-cert/ca.crt ]; then
+              echo "Installing custom CA certificate..."
+              cp /ca-cert/ca.crt /usr/local/share/ca-certificates/custom-ca.crt
+              update-ca-certificates
+              echo "Copying updated certificates to shared volume..."
+              cp -r /etc/ssl/certs/* /shared-certs/
+              echo "CA certificate installation complete"
+            fi
+        volumeMounts:
+          - name: ca-cert
+            mountPath: /ca-cert
+            readOnly: true
+          - name: shared-certs
+            mountPath: /shared-certs
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}
         securityContext:
@@ -125,12 +149,38 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /etc/dns
+        {{- if .Values.customCA.enabled }}
+        - name: shared-certs
+          mountPath: /etc/ssl/certs
+          readOnly: true
+        {{- end }}
       volumes:
       - name: config
       {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
           claimName: {{ .Values.persistence.existingClaim | default (include "technitium-dns-server.fullname" .) }}
       {{- else }}
+        emptyDir: {}
+      {{- end }}
+      {{- if .Values.customCA.enabled }}
+      - name: ca-cert
+        {{- if .Values.customCA.certificate }}
+        secret:
+          secretName: {{ include "technitium-dns-server.fullname" . }}-ca-cert
+        {{- else if .Values.customCA.secret.name }}
+        secret:
+          secretName: {{ .Values.customCA.secret.name }}
+          items:
+            - key: {{ .Values.customCA.secret.key }}
+              path: ca.crt
+        {{- else if .Values.customCA.configmap.name }}
+        configMap:
+          name: {{ .Values.customCA.configmap.name }}
+          items:
+            - key: {{ .Values.customCA.configmap.key }}
+              path: ca.crt
+        {{- end }}
+      - name: shared-certs
         emptyDir: {}
       {{- end }}
       {{- with .Values.nodeSelector }}
