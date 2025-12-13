@@ -525,13 +525,6 @@ After following this guide, you'll have:
 - [Helm Documentation](https://helm.sh/docs/)
 - [Certificate Management Best Practices](https://kubernetes.io/docs/tasks/tls/managing-tls-in-a-cluster/)
 
-## Support
-
-For issues with:
-- **Technitium DNS Server**: [GitHub Issues](https://github.com/TechnitiumSoftware/DnsServer/issues)
-- **This Helm Chart**: [Your Chart Repository Issues]
-- **Certificate Generation**: OpenSSL documentation or Stack Overflow
-
 ---
 
 **Last Updated**: December 2025
