@@ -195,10 +195,6 @@ Contributions are welcome! Please:
 3. Make your changes
 4. Submit a pull request
 
-## License
-
-[Your License Here]
-
 ## Credits
 
 - Technitium DNS Server: https://github.com/TechnitiumSoftware/DnsServer
